@@ -1,9 +1,9 @@
 #include <VirtualWire.h>
 
-#define leftmotor1 
-#define leftmotor2
-#define rightmotor1
-#define rightmotor2
+#define leftmotor1 3
+#define leftmotor2 6
+#define rightmotor1 9
+#define rightmotor2	10
 
 byte message[VW_MAX_MESSAGE_LEN]; // a buffer to store the incoming messages
 byte messageLength = VW_MAX_MESSAGE_LEN; // the size of the message
@@ -98,7 +98,7 @@ void loop()
 	// put your main code here, to run repeatedly:
 	byte* input = receive(123, 2);
 	Serial.print("Received : ");
-	Serial.println(input);
+	Serial.println(input[0]);
 	
 	if (input[0] == 1)
 	{

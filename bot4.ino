@@ -22,7 +22,7 @@ byte* receive (byte code, byte len)
 			Serial.print("Received: ");
 			for (int i = 0 ; i < messageLength ; i++)
 			{
-				Serial.write(message[i]);
+				Serial.print(message[i]);
 				temp[i] = message[i];
 			}
 			Serial.println();
@@ -38,6 +38,8 @@ byte* receive (byte code, byte len)
 				break;
 		}
 	}while(true);
+
+	return temp;
 }
 
 void setup() 
@@ -52,6 +54,7 @@ void setup()
 	pinMode(leftmotor2, OUTPUT);
 	pinMode(rightmotor1, OUTPUT);
 	pinMode(rightmotor2, OUTPUT);
+	pinMode(13, OUTPUT); //for LED
 }
 
 void rightturn()
@@ -100,6 +103,9 @@ void loop()
 	byte* input = receive(123, 2);
 	Serial.print("Received : ");
 	Serial.println(input[0]);
+	digitalWrite(13, HIGH);
+	delay(200);
+	digitalWrite(13, LOW);
 	
 	if (input[0] == 1)
 	{

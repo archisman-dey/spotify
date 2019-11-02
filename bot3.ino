@@ -7,7 +7,7 @@
 
 #define MOVE_DELAY 50
 #define LED_BLINK_TIME 200
-#define CHECKSUM 124
+#define CHECKSUM 123
 
 bool debug = true;
 

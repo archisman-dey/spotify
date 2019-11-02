@@ -5,6 +5,8 @@
 #define rightmotor1 9
 #define rightmotor2	10
 
+bool debug = true;
+
 byte message[VW_MAX_MESSAGE_LEN]; // a buffer to store the incoming messages
 byte messageLength = VW_MAX_MESSAGE_LEN; // the size of the message
 
@@ -12,28 +14,37 @@ byte messageLength = VW_MAX_MESSAGE_LEN; // the size of the message
 //byte is a one byte int
 byte* receive (byte code, byte len)
 {
-	Serial.print("Called receive with code ");
-	Serial.println(code);
+	if (debug)
+	{
+		Serial.print("Called receive with code ");
+		Serial.println(code);
+	}
 	byte* temp = new byte[len];
 	do 
 	{
 		if(vw_get_message(message, &messageLength)) // Non-blocking
 		{
-			Serial.print("Received: ");
+			if (debug)
+				Serial.print("Received: ");
+
 			for (int i = 0 ; i < messageLength ; i++)
 			{
-				Serial.print(message[i]);
+				if (debug)
+					Serial.print(message[i]);
 				temp[i] = message[i];
 			}
-			Serial.println();
-			Serial.println("The array is : ");
-
-			for(int k = 0 ; k < messageLength ; k++)
+			if (debug)
 			{
-				Serial.print(temp[k]);
-				Serial.print(" ");
+				Serial.println();
+				Serial.println("The array is : ");
+
+				for(int k = 0 ; k < messageLength ; k++)
+				{
+					Serial.print(temp[k]);
+					Serial.print(" ");
+				}
+				Serial.println();
 			}
-			Serial.println();
 			if (temp[len - 1] == code)
 				break;
 		}
@@ -44,7 +55,10 @@ byte* receive (byte code, byte len)
 
 void setup() 
 {
-	Serial.begin(9600);
+	if (debug)
+	{
+		Serial.begin(9600);
+	}
 	// Initialize the IO and ISR
 	vw_set_rx_pin(12);
 	vw_setup(4000); // Bits per sec
@@ -101,8 +115,11 @@ void loop()
 {
 	// put your main code here, to run repeatedly:
 	byte* input = receive(123, 2);
-	Serial.print("Received : ");
-	Serial.println(input[0]);
+	if (debug)
+	{
+		Serial.print("Received : ");
+		Serial.println(input[0]);
+	}
 	digitalWrite(13, HIGH);
 	delay(200);
 	digitalWrite(13, LOW);

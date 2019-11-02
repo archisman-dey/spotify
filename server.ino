@@ -1,5 +1,7 @@
 #include <VirtualWire.h>
 
+byte input[2];
+
 void qsend (byte *message, byte len)
 {
 	Serial.print("Sending : ");
@@ -28,13 +30,15 @@ void loop()
 {
 	if (Serial.available())
 	{
-		byte input[2] = {Serial.read() - 48, 123};
+		int in = Serial.readStringUntil('\n').toInt();
+		Serial.println(in);
+		input[0] = in/1000 ;
+		input[1] = in%1000;
 
 		Serial.print("Received : ");
 		Serial.println(input[0]);
 
 		qsend(input, 2);
-		delay(1500);
 		Serial.println("Done sending");
 	}
 }

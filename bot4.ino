@@ -2,8 +2,11 @@
 
 #define leftmotor1 3
 #define leftmotor2 6
-#define rightmotor1 9
-#define rightmotor2	10
+#define rightmotor1 10
+#define rightmotor2	9
+
+#define MOVE_DELAY 100
+#define LED_BLINK_TIME 200
 
 bool debug = true;
 
@@ -121,24 +124,32 @@ void loop()
 		Serial.println(input[0]);
 	}
 	digitalWrite(13, HIGH);
-	delay(200);
+	delay(LED_BLINK_TIME);
 	digitalWrite(13, LOW);
 	
 	if (input[0] == 1)
 	{
 		leftturn();
+		delay(MOVE_DELAY);
+		stop();
 	}
 	else if (input[0] == 2)
 	{
 		rightturn();
+		delay(MOVE_DELAY);
+		stop();
 	}
 	else if (input[0] == 3)
 	{
 		forward();
+		delay(MOVE_DELAY);
+		stop();
 	}
 	else if (input[0] == 4)
 	{
 		back();
+		delay(MOVE_DELAY);
+		stop();
 	}
 	else if (input[0] == 5)
 	{

@@ -44,7 +44,8 @@ void setup()
 {
 	Serial.begin(9600);
 	// Initialize the IO and ISR
-	vw_setup(2000); // Bits per sec
+	vw_set_rx_pin(12);
+	vw_setup(4000); // Bits per sec
 	vw_rx_start(); // Start the receiver
 	// put your setup code here, to run once:
 	pinMode(leftmotor1, OUTPUT);

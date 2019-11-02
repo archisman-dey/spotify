@@ -19,7 +19,9 @@ void setup()
 { 
 	Serial.begin(9600);
 	// Initialize the IO and ISR
-	vw_setup(2000); // Bits per sec
+	vw_set_ptt_inverted(true);
+	vw_set_tx_pin(12);
+	vw_setup(4000); // Bits per sec
 }
 
 void loop()
@@ -32,6 +34,7 @@ void loop()
 		Serial.println(input[0]);
 
 		qsend(input, 2);
+		delay(1500);
 		Serial.println("Done sending");
 	}
 }

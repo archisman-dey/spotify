@@ -156,4 +156,8 @@ void loop()
 	{
 		stop();
 	}
+	else if (input[0] == 6)
+	{
+		digitalWrite(13, HIGH);
+	}
 }

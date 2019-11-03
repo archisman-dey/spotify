@@ -1,6 +1,7 @@
 #include <VirtualWire.h>
 
-byte input[2];
+#define CHECKSUM 12
+byte input[5];
 
 void qsend (byte *message, byte len)
 {
@@ -30,15 +31,15 @@ void loop()
 {
 	if (Serial.available())
 	{
-		int in = Serial.readStringUntil('\n').toInt();
+		long in = Serial.readStringUntil('\n').toInt();
 		Serial.println(in);
 		input[0] = in/1000 ;
-		input[1] = in%1000;
+		input[1] = (in/100)%10;
+		input[2] = (in/10)%10;
+		input[3] = in%10;
+		input[4] = CHECKSUM;
 
-		Serial.print("Received : ");
-		Serial.println(input[0]);
-
-		qsend(input, 2);
+		qsend(input, 5);
 		Serial.println("Done sending");
 	}
 }

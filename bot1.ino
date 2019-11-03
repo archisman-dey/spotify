@@ -7,7 +7,8 @@
 
 #define MOVE_DELAY 50
 #define LED_BLINK_TIME 200
-#define CHECKSUM 121
+#define CHECKSUM 12
+#define BOT_NUMBER 1
 
 bool debug = true;
 
@@ -16,40 +17,37 @@ byte messageLength = VW_MAX_MESSAGE_LEN; // the size of the message
 
 //returns an array of bytes whose last element matches with code
 //byte is a one byte int
-byte* receive (byte code, byte len)
+byte* receive ()
 {
 	if (debug)
 	{
-		Serial.print("Called receive with code ");
-		Serial.println(code);
+		Serial.println("Called receive.");
 	}
-	byte* temp = new byte[len];
+	byte* temp = new byte[1];
 	do
 	{
 		if(vw_get_message(message, &messageLength)) // Non-blocking
 		{
 			if (debug)
-				Serial.print("Received: ");
+				Serial.print("Received : ");
 
 			for (int i = 0 ; i < messageLength ; i++)
 			{
 				if (debug)
 					Serial.print(message[i]);
-				temp[i] = message[i];
 			}
+
+			temp[0] = message[BOT_NUMBER - 1];
+			byte checksum = message[messageLength - 2]*10 + message[messageLength - 1];
+
 			if (debug)
 			{
-				Serial.println();
-				Serial.println("The array is : ");
-
-				for(int k = 0 ; k < messageLength ; k++)
-				{
-					Serial.print(temp[k]);
-					Serial.print(" ");
-				}
-				Serial.println();
+				Serial.print("Extracted : ");
+				Serial.println(temp[0]);
+				Serial.print("Checksum is : ");
+				Serial.println(checksum);
 			}
-			if (temp[len - 1] == code)
+			if (checksum == CHECKSUM)
 				break;
 		}
 	}while(true);
@@ -118,7 +116,7 @@ void stop()
 void loop() 
 {
 	// put your main code here, to run repeatedly:
-	byte* input = receive(CHECKSUM, 2);
+	byte* input = receive();
 	if (debug)
 	{
 		Serial.print("Received : ");

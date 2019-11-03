@@ -5,7 +5,7 @@
 #define rightmotor1 9
 #define rightmotor2	10
 
-#define MOVE_DELAY 50
+#define MOVE_DELAY 200
 #define LED_BLINK_TIME 200
 #define CHECKSUM 12
 #define BOT_NUMBER 3
@@ -38,7 +38,7 @@ byte* receive ()
 			}
 
 			temp[0] = message[BOT_NUMBER - 1];
-			byte checksum = message[messageLength - 2]*10 + message[messageLength - 1];
+			byte checksum = message[messageLength - 1];
 
 			if (debug)
 			{

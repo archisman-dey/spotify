@@ -1,7 +1,7 @@
 #include <VirtualWire.h>
 
-#define leftmotor1 3
-#define leftmotor2 6
+#define leftmotor1 6
+#define leftmotor2 3
 #define rightmotor1 10
 #define rightmotor2	9
 

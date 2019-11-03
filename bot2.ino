@@ -83,7 +83,7 @@ void back()
 	digitalWrite(rightmotor2, HIGH);
 }
 
-void leftturn()
+void forward()
 {
 	digitalWrite(leftmotor1, LOW);
 	digitalWrite(leftmotor2, HIGH);
@@ -99,7 +99,7 @@ void rightturn()
 	digitalWrite(rightmotor2, LOW);
 }
 
-void forward()
+void leftturn()
 {
 	digitalWrite(leftmotor1, LOW);
 	digitalWrite(leftmotor2, HIGH);

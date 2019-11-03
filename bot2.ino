@@ -75,7 +75,7 @@ void setup()
 	pinMode(13, OUTPUT); //for LED
 }
 
-void rightturn()
+void back()
 {
 	digitalWrite(leftmotor1, HIGH);
 	digitalWrite(leftmotor2, LOW);
@@ -91,7 +91,7 @@ void leftturn()
 	digitalWrite(rightmotor2, LOW);
 }
 
-void back()
+void rightturn()
 {
 	digitalWrite(leftmotor1, HIGH);
 	digitalWrite(leftmotor2, LOW);

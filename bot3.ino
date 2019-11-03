@@ -1,9 +1,9 @@
 #include <VirtualWire.h>
 
-#define leftmotor1 6
-#define leftmotor2 3
-#define rightmotor1 10
-#define rightmotor2	9
+#define leftmotor1 3
+#define leftmotor2 6
+#define rightmotor1 9
+#define rightmotor2	10
 
 #define MOVE_DELAY 50
 #define LED_BLINK_TIME 200

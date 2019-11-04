@@ -5,7 +5,7 @@
 #define rightmotor1 10
 #define rightmotor2	9
 
-#define MOVE_DELAY 200
+#define MOVE_DELAY 100
 #define LED_BLINK_TIME 200
 #define CHECKSUM 12
 #define BOT_NUMBER 4

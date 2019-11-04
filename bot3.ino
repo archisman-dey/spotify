@@ -6,6 +6,7 @@
 #define rightmotor2	10
 
 #define MOVE_DELAY 100
+#define ANGLE_DELAY 200
 #define LED_BLINK_TIME 200
 #define CHECKSUM 12
 #define BOT_NUMBER 3
@@ -129,13 +130,13 @@ void loop()
 	if (input[0] == 1)
 	{
 		leftturn();
-		delay(MOVE_DELAY);
+		delay(ANGLE_DELAY);
 		stop();
 	}
 	else if (input[0] == 2)
 	{
 		rightturn();
-		delay(MOVE_DELAY);
+		delay(ANGLE_DELAY);
 		stop();
 	}
 	else if (input[0] == 3)

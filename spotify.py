@@ -10,18 +10,22 @@ import time
 import requests
 import math
 
-initial = [[0, 0, 0]]*4
-final = [[0, 0]]*4
+initial_str = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+final_str = [[0,0],[0,0],[0,0],[0,0]]
+initial = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+final = [[0,0],[0,0],[0,0],[0,0]]
+#last_move = [0,0,0,0] #stores last move of each bot
 bots = ()
 max_tries_orient = 25
 max_tries_forward = 3
 delay_after_send = 2
+na = []
 
 # 640 by 480, angle between 0 and 360
 # Define the serial port and baud rate.
 # Ensure the 'COM#' corresponds to what was seen in the Windows Device Manager
-#url = "http://10.150.39.190:8080/data.txt"
-url = "http://192.168.137.9:8080/data.txt"
+url = "http://10.42.0.1:8080/data.txt"
+#url = "http://192.168.137.9:8080/data.txt"
 ser = serial.Serial('COM6', 9600)
 print("Connected to Serial")
 
@@ -36,8 +40,8 @@ def get_coordinates ():
 	final_temp = (string.split('=')[1]).split('-')
 
 	for i in range (0, 4, 1):
-		initial[i] = [initial_temp[i].split(',')[0] , initial_temp[i].split(',')[1] , initial_temp[i].split(',')[2]]
-		final[i] = [final_temp[i].split(',')[0] , final_temp[i].split(',')[1]]
+		initial_str[i] = [initial_temp[i].split(',')[0] , initial_temp[i].split(',')[1] , initial_temp[i].split(',')[2]]
+		final_str[i] = [final_temp[i].split(',')[0] , final_temp[i].split(',')[1]]
 
 def angle (xi, yi, xf, yf):
 	print("Finding angle between : ")
@@ -61,49 +65,190 @@ def angle (xi, yi, xf, yf):
 	return result
 
 def convert_coordinates_to_int ():
+	global na
 	na = []
 	for i in range (0, 4, 1):
 		for j in range (0, 3, 1):
-			if initial[i][j] == 'NA':
+			if initial_str[i][j] == 'NA':
 				na.append(i + 1)
 				break
-			initial[i][j] = (int)(initial[i][j])
+			initial[i][j] = (int)(initial_str[i][j])
 	for i in range (0, 4, 1):
 		for j in range (0, 2, 1):
-			final[i][j] = (int)(final[i][j])
+			final[i][j] = (int)(final_str[i][j])
 
 	if not na == []:
-		react_to_NA(na)
+		react_to_NA()
 
-def react_to_NA(bot_number_list):
-	print("Bot " + (str)(bot_number_list) + " is showing NA")
-	message = [5]*4
-	for bot_number in bot_number_list:
-		message[bot_number - 1] = 4
-	send_to_bots(message)
+def react_to_NA():
+	print("Bot " + (str)(na) + " is showing NA")
+	message = [5,5,5,5]
+	for bot_number in na:
+		angle = initial[bot_number - 1][2]
+		corners = [[0,0],[480,0],[0,640],[480,640]]
+		mindist = 127367123586125
+		mindist_index = 0
+		for i in range(0, 4, 1):
+			dist = distance(initial[bot_number - 1] , corners[i])
+			if dist < mindist :
+				mindist = dist
+				mindist_index = i
+
+		print("Nearest to corner : " + str(corners[mindist_index]))
+
+		if mindist_index == 0 :
+			if abs(angle - 45) < 45 : #0 to 90
+				print("right and forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 2
+				send_to_bots(message)
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+			elif abs(angle - 135) < 45 : #90 to 180
+				print("back")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 4
+				send_to_bots(message)
+			elif abs(angle - 225) < 45 : #180 to 270
+				print("left and forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 1
+				send_to_bots(message)
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+			elif abs(angle - 315) < 45 : #270 to 360
+				print("forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+		elif mindist_index == 1:
+			if abs(angle - 45) < 45 : #0 to 90
+				print("back")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 4
+				send_to_bots(message)
+			elif abs(angle - 135) < 45 : #90 to 180
+				print("left and forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 1
+				send_to_bots(message)
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+			elif abs(angle - 225) < 45 : #180 to 270
+				print("forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+			elif abs(angle - 315) < 45 : #270 to 360
+				print("right and forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 2
+				send_to_bots(message)
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+		elif mindist_index == 2:
+			if abs(angle - 45) < 45 : #0 to 90
+				print("forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+			elif abs(angle - 135) < 45 : #90 to 180
+				print("right and forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 2
+				send_to_bots(message)
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+			elif abs(angle - 225) < 45 : #180 to 270
+				print("back")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 4
+				send_to_bots(message)
+			elif abs(angle - 315) < 45 : #270 to 360
+				print("left and forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 1
+				send_to_bots(message)
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+		elif mindist_index == 3:
+			if abs(angle - 45) < 45 : #0 to 90
+				print("left and forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 1
+				send_to_bots(message)
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+			elif abs(angle - 135) < 45 : #90 to 180
+				print("forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+			elif abs(angle - 225) < 45 : #180 to 270
+				print("right and forward")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 2
+				send_to_bots(message)
+				message = [5,5,5,5]
+				message[bot_number - 1] = 3
+				send_to_bots(message)
+			elif abs(angle - 315) < 45 : #270 to 360
+				print("back")
+				message = [5,5,5,5]
+				message[bot_number - 1] = 4
+				send_to_bots(message)
+
 	get_coordinates()
 	convert_coordinates_to_int()
 
+"""
+	if not check_collisions():
+		send_to_bots(message)
+		get_coordinates()
+		convert_coordinates_to_int()
+	
+def check_collisions():
+	for bot_number_1 in (1, 5, 1):
+		for bot_number_2 in (1, 5, 1):
+			if bot_number_1 == bot_number_2:
+				continue
+			dist = distance(initial[bot_number_1 - 1] , initial[bot_number_2 - 1])
+			if dist < 50:
+				print("Collision happening between " + (str)(bot_number_1) + " " + (str)(bot_number_2))
+				return True
+	return False
+"""
 
-def distancesq (l1, l2):
-	return (l1[0] - l2[0])**2 + (l1[1]-l2[1])**2
+def distance (l1, l2):
+	print("Calculating distance between " + str(l1) + " and " + str(l2))
+	return ((l1[0] - l2[0])**2 + (l1[1]-l2[1])**2)**0.5
 
 def send_to_bots (num_list):
 	print("Sending : " + (str)(num_list))
 	message = (bytes)(''.join([str(elem) for elem in num_list]), encoding = 'utf-8')
 	ser.write(message)
+
+	#for bot_number in (1, 5, 1):
+	#	last_move[bot_number - 1] = num_list[bot_number - 1]
 	time.sleep(delay_after_send)
 
 def assign_bots ():
 	print("Assign bots called")
 	bots_temp = ()
-	mindist = 23746273649236487237627364
+	mindist = 2374627364923648723762
 	for i in range (1, 5, 1):
 		for j in range (1, 5, 1):
 			for k in range (1, 5, 1):
 				for l in range (1, 5, 1):
 					if i + j + k + l == 10 and i*j*k*l == 24:
-						dist = distancesq(initial[0], final[i-1]) + distancesq(initial[1], final[j-1]) + distancesq(initial[2], final[k-1]) + distancesq(initial[3], final[l-1])
+						dist = distance(initial[0], final[i-1]) + distance(initial[1], final[j-1]) + distance(initial[2], final[k-1]) + distance(initial[3], final[l-1])
 						if (dist < mindist):
 							mindist = dist
 							bots_temp = (i, j, k, l)
@@ -111,7 +256,8 @@ def assign_bots ():
 	return bots_temp
 
 def orient (already_done):
-	message = [5]*4
+	print("Orient called")
+	message = [5,5,5,5]
 	global max_tries_orient
 	print("Max tries orient is " + (str)(max_tries_orient))
 	tries = max_tries_orient
@@ -119,22 +265,25 @@ def orient (already_done):
 		get_coordinates()
 		convert_coordinates_to_int()
 
-		initial_angle = [0]*4
-		final_angle = [0]*4
+		initial_angle = [0,0,0,0]
+		final_angle = [0,0,0,0]
 
 		for bot_number in range (1, 5, 1):
 			initial_angle[bot_number - 1] = initial[bot_number - 1][2]
 			final_angle[bot_number - 1] = angle(initial[bot_number - 1][0] , initial[bot_number - 1][1] , final[bots[bot_number - 1] - 1][0] , final[bots[bot_number - 1] - 1][1])
 		
-		done = [False]*4
+		print("In orient, initial angles are" + str(initial_angle))
+		print("In orient, final angles are" + str(final_angle))
+
+		done = [False, False, False, False]
 		for bot_number in range (1, 5, 1):
 			if abs(final_angle[bot_number - 1] - initial_angle[bot_number - 1]) < 10:
 				done[bot_number - 1] = True
-		if done == [True]*4:
+		if done == [True, True, True, True]:
 			break
 
-		left_angle = [0]*4
-		right_angle = [0]*4
+		left_angle = [0,0,0,0]
+		right_angle = [0,0,0,0]
 
 		for bot_number in range (1, 5, 1):
 
@@ -153,14 +302,16 @@ def orient (already_done):
 		for bot_number in range (1, 5, 1):
 			if already_done[bot_number - 1]:
 				message[bot_number - 1] = 6
-	
+		
+		print("In orient, message being sent is " + str(message))
 		send_to_bots(message)
 		tries -= 1
 
 	max_tries_orient = 5
 
 def move_forward_a_bit (done):
-	message = [3]*4
+	print("Move forward a bit called")
+	message = [3,3,3,3]
 	global max_tries_forward
 	print("Max tries forward is " + (str)(max_tries_forward))
 	tries = max_tries_forward
@@ -168,21 +319,26 @@ def move_forward_a_bit (done):
 	get_coordinates()
 	convert_coordinates_to_int()
 
-	initial_distances = [distancesq(initial[bot_number - 1] , final[bots[bot_number - 1] - 1]) for bot_number in range(1, 5, 1)]
+	initial_distances = [distance(initial[bot_number - 1] , final[bots[bot_number - 1] - 1]) for bot_number in range(1, 5, 1)]
+	print("initial_distances are")
+	print(initial_distances)
 
 	while tries:
 		for bot_number in range (1, 5, 1):
 			if done[bot_number - 1]:
 				message[bot_number - 1] = 5
 
+		print("Sending to bots" + str(message))
 		send_to_bots(message)
 
 		get_coordinates()
 		convert_coordinates_to_int()
 
-		distances = [distancesq(initial[bot_number - 1] , final[bots[bot_number - 1] - 1]) for bot_number in range(1, 5, 1)]
+		distances = [distance(initial[bot_number - 1] , final[bots[bot_number - 1] - 1]) for bot_number in range(1, 5, 1)]
+		print("distances after trying to move a bit are")
+		print(distances)
 
-		for bot_number in range(1, 5, 1):
+		for bot_number in range (1, 5, 1):
 			if initial_distances[bot_number - 1] - distances[bot_number - 1]:
 				message[bot_number - 1] = 6
 
@@ -190,16 +346,20 @@ def move_forward_a_bit (done):
 
 def check_if_done ():
 	print("Checking if done")
-	message = [5]*4
+	message = [5,5,5,5]
 	get_coordinates()
 	convert_coordinates_to_int()
 	done = [False, False, False, False]
 	for i in range (0, 4, 1):
-		if distancesq(initial[i], final[bots[i] - 1]) < 9:
+		if distance(initial[i], final[bots[i] - 1]) < 7:
 			done[i] = True
 			message[i] = 6
-	if not message == [5]*4:
+	if not message == [5,5,5,5]:
 		send_to_bots(message)
+
+	if not na == [] :
+		for bot_number in na:
+			done[bot_number - 1] = True 
 	print(done)
 	return done
 

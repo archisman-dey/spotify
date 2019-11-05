@@ -1,10 +1,3 @@
-"""
-Tasks left :
-1. If bot is very close to the edge,right now it might go outside boundary while moving. Fix this.
-2. Detect for collisions, if two bots get very near, the one with bot_number less should go back (but not outside boundary) and let the bot with more bot_number go first
-3. Right now, if one of the bots shows NA, it just goes back. This might not work with edge cases.
-"""
-
 import serial
 import time
 import requests
@@ -14,7 +7,7 @@ initial_str = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
 final_str = [[0,0],[0,0],[0,0],[0,0]]
 initial = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
 final = [[0,0],[0,0],[0,0],[0,0]]
-#last_move = [0,0,0,0] #stores last move of each bot
+
 bots = ()
 max_tries_orient = 25
 max_tries_forward = 3
@@ -25,7 +18,6 @@ na = []
 # Define the serial port and baud rate.
 # Ensure the 'COM#' corresponds to what was seen in the Windows Device Manager
 url = "http://10.42.0.1:8080/data.txt"
-#url = "http://192.168.137.9:8080/data.txt"
 ser = serial.Serial('COM6', 9600)
 print("Connected to Serial")
 
@@ -208,24 +200,6 @@ def react_to_NA():
 	get_coordinates()
 	convert_coordinates_to_int()
 
-"""
-	if not check_collisions():
-		send_to_bots(message)
-		get_coordinates()
-		convert_coordinates_to_int()
-	
-def check_collisions():
-	for bot_number_1 in (1, 5, 1):
-		for bot_number_2 in (1, 5, 1):
-			if bot_number_1 == bot_number_2:
-				continue
-			dist = distance(initial[bot_number_1 - 1] , initial[bot_number_2 - 1])
-			if dist < 50:
-				print("Collision happening between " + (str)(bot_number_1) + " " + (str)(bot_number_2))
-				return True
-	return False
-"""
-
 def distance (l1, l2):
 	print("Calculating distance between " + str(l1) + " and " + str(l2))
 	return ((l1[0] - l2[0])**2 + (l1[1]-l2[1])**2)**0.5
@@ -235,8 +209,6 @@ def send_to_bots (num_list):
 	message = (bytes)(''.join([str(elem) for elem in num_list]), encoding = 'utf-8')
 	ser.write(message)
 
-	#for bot_number in (1, 5, 1):
-	#	last_move[bot_number - 1] = num_list[bot_number - 1]
 	time.sleep(delay_after_send)
 
 def assign_bots ():
